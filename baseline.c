@@ -2,13 +2,14 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define WIDTH 1024
-#define HEIGHT 1024
+#define WIDTH 2048
+#define HEIGHT 2048
+#define RUNS 100
 
 int main() {
     int i, j, x, y;
 
-    // Allocate 2D array (inefficient)
+    // Inefficient 2D allocation
     int** image = malloc(HEIGHT * sizeof(int*));
     int** output = malloc(HEIGHT * sizeof(int*));
 
@@ -24,23 +25,31 @@ int main() {
         }
     }
 
-    clock_t start = clock();
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
 
-    // Blur filter (3x3 kernel)
-    for (i = 1; i < HEIGHT - 1; i++) {
-        for (j = 1; j < WIDTH - 1; j++) {
-            int sum = 0;
-            for (x = -1; x <= 1; x++) {
-                for (y = -1; y <= 1; y++) {
-                    sum += image[i + x][j + y];
+    // Repeat work
+    for (int r = 0; r < RUNS; r++) {
+        for (i = 1; i < HEIGHT - 1; i++) {
+            for (j = 1; j < WIDTH - 1; j++) {
+                int sum = 0;
+
+                for (x = -1; x <= 1; x++) {
+                    for (y = -1; y <= 1; y++) {
+                        sum += image[i + x][j + y];
+                    }
                 }
+
+                output[i][j] = sum / 9;
             }
-            output[i][j] = sum / 9;
         }
     }
 
-    clock_t end = clock();
-    double time_spent = (double)(end - start) / CLOCKS_PER_SEC;
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
+    double time_spent =
+        (end.tv_sec - start.tv_sec) +
+        (end.tv_nsec - start.tv_nsec) / 1e9;
 
     printf("Baseline Time: %f seconds\n", time_spent);
 

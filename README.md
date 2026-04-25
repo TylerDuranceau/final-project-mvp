@@ -1,7 +1,9 @@
 # Final Project MVP - Image Blur Optimization
 
+# Final Project MVP - Image Blur Optimization
+
 ## Description
-This project compares a baseline and optimized implementation of a blur filter in C. The optimization improves cache performance using contiguous memory.
+This project compares a baseline and optimized blur filter in C. The optimized version improves performance by using contiguous memory and better cache usage.
 
 ## Compile
 gcc -Wall baseline.c -o baseline
